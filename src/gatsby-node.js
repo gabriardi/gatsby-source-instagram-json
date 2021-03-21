@@ -117,7 +117,7 @@ function processDatum(datum, params) {
 }
 
 exports.sourceNodes = async (
-  { actions, store, cache, createNodeId, getNode },
+  { actions, store, cache, createNodeId, getNode, reporter },
   options
 ) => {
   const { createNode, touchNode } = actions
@@ -146,6 +146,7 @@ exports.sourceNodes = async (
           createNodeId,
           touchNode,
           getNode,
+          reporter,
         })
         createNode(res)
       })

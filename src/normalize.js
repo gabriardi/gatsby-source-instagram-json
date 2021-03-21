@@ -16,6 +16,7 @@ const createFileNode = async ({
   createNodeId,
   touchNode,
   getNode,
+  reporter,
 }) => {
   const mediaDataCacheKey = `instagram-media-${id}`
   const cacheMediaData = await cache.get(mediaDataCacheKey)
@@ -32,12 +33,14 @@ const createFileNode = async ({
   }
 
   try {
+    reporter.info(`[Instagram] creating new remote file node ${preview}`)
     const fileNode = await createRemoteFileNode({
       url: preview,
       store,
       cache,
       createNode,
       createNodeId,
+      reporter,
     })
     fileNodeID = fileNode.id
 
@@ -62,6 +65,7 @@ exports.downloadMediaFile = async ({
   createNodeId,
   touchNode,
   getNode,
+  reporter,
 }) => {
   const { carouselImages, id, preview } = datum
 
@@ -75,6 +79,7 @@ exports.downloadMediaFile = async ({
     createNodeId,
     touchNode,
     getNode,
+    reporter,
   })
 
   /** eslint-disable-next-line require-atomic-updates */
@@ -95,6 +100,7 @@ exports.downloadMediaFile = async ({
       createNodeId,
       touchNode,
       getNode,
+      reporter,
     })
 
     /** eslint-disable-next-line require-atomic-updates */
