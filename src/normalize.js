@@ -61,6 +61,7 @@ exports.downloadMediaFile = async ({
   createNode,
   createNodeId,
   touchNode,
+  getNode,
 }) => {
   const { carouselImages, id, preview } = datum
 
@@ -73,6 +74,7 @@ exports.downloadMediaFile = async ({
     createNode,
     createNodeId,
     touchNode,
+    getNode,
   })
 
   /** eslint-disable-next-line require-atomic-updates */
@@ -92,6 +94,7 @@ exports.downloadMediaFile = async ({
       createNode,
       createNodeId,
       touchNode,
+      getNode,
     })
 
     /** eslint-disable-next-line require-atomic-updates */
