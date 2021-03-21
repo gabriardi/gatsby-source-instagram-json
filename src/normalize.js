@@ -27,8 +27,8 @@ const createFileNode = async ({
     if (fileNode) {
       fileNodeID = cacheMediaData.fileNodeID
       touchNode(fileNode)
+      return fileNodeID
     }
-    return fileNodeID
   }
 
   try {
