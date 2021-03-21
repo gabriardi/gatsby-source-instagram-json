@@ -15,14 +15,19 @@ const createFileNode = async ({
   createNode,
   createNodeId,
   touchNode,
+  getNode,
 }) => {
   const mediaDataCacheKey = `instagram-media-${id}`
   const cacheMediaData = await cache.get(mediaDataCacheKey)
   let fileNodeID
 
   if (cacheMediaData) {
-    fileNodeID = cacheMediaData.fileNodeID
-    touchNode({ nodeId: fileNodeID })
+    // make sure the file node still exists
+    const fileNode = getNode(cacheMediaData.fileNodeID)
+    if (fileNode) {
+      fileNodeID = cacheMediaData.fileNodeID
+      touchNode(fileNode)
+    }
     return fileNodeID
   }
 

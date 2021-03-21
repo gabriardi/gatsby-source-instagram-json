@@ -32,8 +32,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "gatsby-source-filesystem": "^2.0.27",
-    "gatsby": ">2.0.0-alpha"
+    "gatsby-source-filesystem": "^3.1.0",
+    "gatsby": ">=3.0.0"
   },
   "repository": "https://github.com/oorestisime/gatsby-source-instagram",
   "scripts": {
