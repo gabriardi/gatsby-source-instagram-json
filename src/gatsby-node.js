@@ -129,6 +129,40 @@ exports.sourceNodes = async (
 ) => {
   const { createNode, touchNode } = actions
   const params = { ...defaultOptions, ...options }
+
+  // create a dummy node to ensure queries still work
+  const buffer = fs.readFileSync(path.resolve(__dirname, `dummy.png`))
+  const id = createNodeId(`InstagramDummy`)
+  const fileNode = await createFileNodeFromBuffer({
+    buffer,
+    store,
+    cache,
+    createNode,
+    createNodeId,
+    getNode,
+    reporter,
+    parentNodeId: id,
+    name: `dummy.png`,
+  })
+
+  const content = {
+    id,
+    mediaType: `__dummy__`,
+  }
+
+  const node = {
+    ...content,
+    parent: `root`,
+    internal: {
+      mediaType: `__dummy__`,
+      type: `InstaNode`,
+      contentDigest: getContentDigest(content),
+    },
+    localFile___NODE: fileNode.id,
+  }
+
+  createNode(node)
+
   let data
 
   if (params.type === `account`) {
@@ -158,38 +192,5 @@ exports.sourceNodes = async (
         createNode(res)
       }),
     )
-  } else {
-    // create a dummy node to ensure queries still work
-    const buffer = fs.readFileSync(path.resolve(__dirname, `dummy.png`))
-    const id = createNodeId(`InstagramDummy`)
-    const fileNode = await createFileNodeFromBuffer({
-      buffer,
-      store,
-      cache,
-      createNode,
-      createNodeId,
-      getNode,
-      reporter,
-      parentNodeId: id,
-      name: `dummy.png`,
-    })
-
-    const content = {
-      id,
-      mediaType: `__dummy__`,
-    }
-
-    const node = {
-      ...content,
-      parent: `root`,
-      internal: {
-        mediaType: `__dummy__`,
-        type: `InstaNode`,
-        contentDigest: getContentDigest(content),
-      },
-      localFile___NODE: fileNode.id,
-    }
-
-    createNode(node)
   }
 }
