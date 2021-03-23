@@ -1,6 +1,9 @@
 const _ = require(`lodash`)
 const crypto = require(`crypto`)
 const normalize = require(`./normalize`)
+const fs = require(`fs`)
+const path = require(`path`)
+const { createFileNodeFromBuffer } = require(`gatsby-source-filesystem`)
 
 const {
   apiInstagramPosts,
@@ -101,24 +104,28 @@ function createUserNode(datum, params) {
   }
 }
 
+function getContentDigest(node) {
+  return crypto
+    .createHash(`md5`)
+    .update(JSON.stringify(node))
+    .digest(`hex`)
+}
+
 function processDatum(datum, params) {
   const node =
     params.type === `user-profile`
       ? createUserNode(datum, params)
       : createPostNode(datum, params)
-      
+
   // Get content digest of node. (Required field)
-  const contentDigest = crypto
-    .createHash(`md5`)
-    .update(JSON.stringify(node))
-    .digest(`hex`)
+  const contentDigest = getContentDigest(node)
   node.internal.contentDigest = contentDigest
   return node
 }
 
 exports.sourceNodes = async (
   { actions, store, cache, createNodeId, getNode, reporter },
-  options
+  options,
 ) => {
   const { createNode, touchNode } = actions
   const params = { ...defaultOptions, ...options }
@@ -133,7 +140,7 @@ exports.sourceNodes = async (
   } else {
     console.warn(`Unknown type for gatsby-source-instagram: ${params.type}`)
   }
-  
+
   // Process data into nodes.
   if (data) {
     return Promise.all(
@@ -149,7 +156,40 @@ exports.sourceNodes = async (
           reporter,
         })
         createNode(res)
-      })
+      }),
     )
+  } else {
+    // create a dummy node to ensure queries still work
+    const buffer = fs.readFileSync(path.resolve(__dirname, `dummy.png`))
+    const id = createNodeId(`InstagramDummy`)
+    const fileNode = await createFileNodeFromBuffer({
+      buffer,
+      store,
+      cache,
+      createNode,
+      createNodeId,
+      getNode,
+      reporter,
+      parentNodeId: id,
+      name: `dummy.png`,
+    })
+
+    const content = {
+      id,
+      mediaType: `__dummy__`,
+    }
+
+    const node = {
+      ...content,
+      parent: `root`,
+      internal: {
+        mediaType: `__dummy__`,
+        type: `InstaNode`,
+        contentDigest: getContentDigest(content),
+      },
+      localFile___NODE: fileNode.id,
+    }
+
+    createNode(node)
   }
 }
