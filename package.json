@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-instagram-json",
   "description": "Gatsby source plugin for fetching instagram posts from local JSON file",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Gabriele Ardizzone <gabri.ardi@gmail.com>",
   "main": "index.js",
   "bugs": {

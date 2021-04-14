@@ -97,24 +97,13 @@ query {
         original
         timestamp
         caption
-        hashtags
         localFile {
           childImageSharp {
             fixed(width: 150, height: 150) {
               ...GatsbyImageSharpFixed
             }
           }
-        },
-        permalink,
-        carouselImages {
-          preview,
-          localFile {
-          childImageSharp {
-            fixed(width: 150, height: 150) {
-              ...GatsbyImageSharpFixed
-            }
-          }
-        },
+        }
         thumbnails {
           src
           config_width
