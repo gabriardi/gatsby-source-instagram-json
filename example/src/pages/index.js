@@ -5,17 +5,17 @@ import { Layout, Container } from "../components"
 const IndexPage = ({ data: { allInstaNode } }) => (
   <Layout>
     <Container
-      title="Graph API"
-      text="The graph API allows you to pull in all the available Instagram
-    posts from a specific account using an access token"
+      title="Public scraping"
+      text="Using public scraping you are able to retrieve the last 12 posts of
+      an Instagram account without using an access token."
       nodes={allInstaNode}
     />
   </Layout>
 )
 
 export const pageQuery = graphql`
-  query IndexQuery {
-    allInstaNode(filter: { username: { eq: "oasome.blog" } }) {
+  query ScrapingQuery {
+    allInstaNode(sort: { fields: timestamp, order: DESC }, limit: 27) {
       edges {
         node {
           id
@@ -23,7 +23,6 @@ export const pageQuery = graphql`
           likes
           caption
           comments
-          hashtags
           localFile {
             childImageSharp {
               fluid(quality: 70, maxWidth: 600, maxHeight: 600) {

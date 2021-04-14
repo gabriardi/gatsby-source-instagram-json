@@ -1,1 +1,1 @@
-# Example site for gatsby-source-instagram
+# Example site for gatsby-source-instagram-json

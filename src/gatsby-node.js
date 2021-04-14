@@ -1,17 +1,8 @@
 const _ = require(`lodash`)
 const crypto = require(`crypto`)
 const normalize = require(`./normalize`)
-const fs = require(`fs`)
-const path = require(`path`)
-const { createFileNodeFromBuffer } = require(`gatsby-source-filesystem`)
 
-const {
-  apiInstagramPosts,
-  scrapingInstagramPosts,
-  apiInstagramHashtags,
-  scrapingInstagramHashtags,
-  scrapingInstagramUser,
-} = require(`./instagram`)
+const { scrapingInstagramPosts } = require(`./instagram`)
 
 const defaultOptions = {
   type: `account`,
@@ -22,30 +13,11 @@ const defaultOptions = {
 async function getInstagramPosts(options) {
   let data
 
-  if (options.access_token && options.instagram_id) {
-    data = await apiInstagramPosts(options)
-  } else {
+  if (options.instagramData) {
     data = await scrapingInstagramPosts(options)
   }
 
   return data
-}
-
-async function getInstagramHashtags(options) {
-  let data
-
-  if (options.access_token && options.instagram_id) {
-    data = await apiInstagramHashtags(options)
-  } else {
-    data = await scrapingInstagramHashtags(options)
-  }
-
-  return data
-}
-
-async function getInstagramUser(options) {
-  const data = await scrapingInstagramUser(options)
-  return [data]
 }
 
 function createPostNode(datum, params) {
@@ -105,10 +77,7 @@ function createUserNode(datum, params) {
 }
 
 function getContentDigest(node) {
-  return crypto
-    .createHash(`md5`)
-    .update(JSON.stringify(node))
-    .digest(`hex`)
+  return crypto.createHash(`md5`).update(JSON.stringify(node)).digest(`hex`)
 }
 
 function processDatum(datum, params) {
@@ -125,55 +94,12 @@ function processDatum(datum, params) {
 
 exports.sourceNodes = async (
   { actions, store, cache, createNodeId, getNode, reporter },
-  options,
+  options
 ) => {
   const { createNode, touchNode } = actions
   const params = { ...defaultOptions, ...options }
 
-  // create a dummy node to ensure queries still work
-  const buffer = fs.readFileSync(path.resolve(__dirname, `dummy.png`))
-  const id = createNodeId(`InstagramDummy`)
-  const fileNode = await createFileNodeFromBuffer({
-    buffer,
-    store,
-    cache,
-    createNode,
-    createNodeId,
-    getNode,
-    reporter,
-    parentNodeId: id,
-    name: `dummy.png`,
-  })
-
-  const content = {
-    id,
-    mediaType: `__dummy__`,
-  }
-
-  const node = {
-    ...content,
-    parent: `root`,
-    internal: {
-      mediaType: `__dummy__`,
-      type: `InstaNode`,
-      contentDigest: getContentDigest(content),
-    },
-    localFile___NODE: fileNode.id,
-  }
-
-  createNode(node)
-
-  let data
-
-  if (params.type === `account`) {
-    data = await getInstagramPosts(params)
-  } else if (params.type === `hashtag`) {
-    data = await getInstagramHashtags(params)
-  } else if (params.type === `user-profile`) {
-    data = await getInstagramUser(params)
-  } else {
-    console.warn(`Unknown type for gatsby-source-instagram: ${params.type}`)
-  }
+  const data = await getInstagramPosts(params)
 
   // Process data into nodes.
   if (data) {
@@ -190,7 +116,7 @@ exports.sourceNodes = async (
           reporter,
         })
         createNode(res)
-      }),
+      })
     )
   }
 }
